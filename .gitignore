@@ -18,3 +18,62 @@ buildNumber.properties
 
 .env
 .env.*
+
+
+# =========================
+# Frontend: React / Vite
+# =========================
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local environment files
+frontend/.env.local
+frontend/.env.*.local
+
+# Logs
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+
+# =========================
+# Backend: Spring / Maven
+# =========================
+
+backend/target/
+
+# Local Spring configuration containing secrets
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-local.yaml
+
+
+# =========================
+# IDE files
+# =========================
+
+.idea/
+*.iml
+
+.vscode/
+
+.classpath
+.project
+.settings/
+
+
+# =========================
+# Operating system files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*~
