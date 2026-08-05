@@ -1,4 +1,4 @@
-package com.evanhagood.pournotes.users;
+package com.evanhagood.pournotes.user;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -32,12 +32,12 @@ public class AppUser {
     private UUID id;
 
     @Column(
-        name = "google_subject",
+        name = "subject",
         nullable = false,
         updatable = false,
         length = 255
     )
-    private String googleSubject;
+    private String subject;
 
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
@@ -55,8 +55,17 @@ public class AppUser {
     protected AppUser() {}
 
     public AppUser(String googleSubject, String displayName) {
-        this.googleSubject = googleSubject;
+        if (googleSubject == null || googleSubject.isBlank()) {
+            throw new IllegalArgumentException("Google subject is required");
+        }
+
+        if (displayName == null || displayName.isBlank()) {
+            throw new IllegalArgumentException("Display name is required");
+        }
+
+        this.subject = googleSubject;
         this.displayName = displayName;
+        this.role = UserRole.USER;
     }
 
     @PrePersist
@@ -71,12 +80,12 @@ public class AppUser {
         this.updatedAt = Instant.now();
     }
 
-        public UUID getId() {
+    public UUID getId() {
         return id;
     }
 
-    public String getGoogleSubject() {
-        return googleSubject;
+    public String getSubject() {
+        return subject;
     }
 
     public String getDisplayName() {

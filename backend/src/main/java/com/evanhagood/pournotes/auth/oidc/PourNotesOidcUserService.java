@@ -1,4 +1,4 @@
-package com.evanhagood.pournotes.authentication.oidc;
+package com.evanhagood.pournotes.auth.oidc;
 
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.evanhagood.pournotes.user.AppUserService;
 
+@Service
 public class PourNotesOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
     
     private final OidcUserService delegate;
