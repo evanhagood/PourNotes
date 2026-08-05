@@ -1,55 +1,89 @@
-import { useEffect, useState } from "react";
-import "./App.css";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-type ApiStatus = {
-  status: string;
-  message: string;
-};
+import { AccountPage } from "./auth/AccountPage.tsx";
+import {
+  fetchCurrentUser,
+  type CurrentUser,
+} from "./auth/authApi";
+import { LoginPage } from "./auth/LoginPage";
+
+const CURRENT_USER_QUERY_KEY = ["current-user"] as const;
 
 function App() {
-  const [apiStatus, setApiStatus] = useState<ApiStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    async function loadStatus() {
-      try {
-        const response = await fetch("/api/status");
+  const {
+    data: currentUser,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: CURRENT_USER_QUERY_KEY,
+    queryFn: fetchCurrentUser,
+  });
 
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
+  function handleLoggedOut() {
+    queryClient.setQueryData<CurrentUser | null>(
+      CURRENT_USER_QUERY_KEY,
+      null,
+    );
+  }
 
-        const data: ApiStatus = await response.json();
-        setApiStatus(data);
-      } catch (requestError) {
-        const message =
-          requestError instanceof Error
-            ? requestError.message
-            : "Unknown request error";
+  if (isPending) {
+    return (
+      <main>
+        <h1>PourNotes</h1>
+        <p>Loading account...</p>
+      </main>
+    );
+  }
 
-        setError(message);
-      }
-    }
-
-    loadStatus();
-  }, []);
+  if (isError) {
+    return (
+      <main>
+        <h1>PourNotes</h1>
+        <p>Unable to contact the PourNotes server.</p>
+      </main>
+    );
+  }
 
   return (
-    <main>
-      <h1>PourNotes</h1>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          currentUser ? (
+            <Navigate to="/account" replace />
+          ) : (
+            <LoginPage />
+          )
+        }
+      />
 
-      {error && <p>Backend error: {error}</p>}
+      <Route
+        path="/account"
+        element={
+          currentUser ? (
+            <AccountPage
+              user={currentUser}
+              onLoggedOut={handleLoggedOut}
+            />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
 
-      {!error && !apiStatus && <p>Connecting to backend...</p>}
-
-      {apiStatus && (
-        <p>
-          Backend status: <strong>{apiStatus.status}</strong>
-          <br />
-          {apiStatus.message}
-        </p>
-      )}
-    </main>
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to={currentUser ? "/account" : "/login"}
+            replace
+          />
+        }
+      />
+    </Routes>
   );
 }
 
