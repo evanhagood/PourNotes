@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: pournotes-db
+    environment:
+      POSTGRES_USER: pournotes
+      POSTGRES_PASSWORD: pournotes
+      POSTGRES_DB: pournotes
+    ports:
+      - "5432:5432"
+    volumes:
+      - pournotes-data:/var/lib/postgresql/data
+
+volumes:
+  pournotes-data:
