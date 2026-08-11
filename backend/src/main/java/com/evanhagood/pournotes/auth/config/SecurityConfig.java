@@ -80,8 +80,6 @@ public class SecurityConfig {
                                         )
                         )
                 );
-
-        // Do not call csrf.disable().
         return http.build();
     }
 }
