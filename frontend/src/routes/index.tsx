@@ -1,26 +1,9 @@
-import {
-  createRootRoute,
-  Outlet,
-} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createRootRoute({
-  component: RootLayout,
+export const Route = createFileRoute("/")({
+  component: HomePage,
 });
 
-function RootLayout() {
-  return (
-    <>
-      <header>
-        {/* Navbar eventually */}
-      </header>
-
-      <main>
-        <Outlet />
-      </main>
-
-      <footer>
-        {/* Footer eventually */}
-      </footer>
-    </>
-  );
+function HomePage() {
+  return <h1>PourNotes Homepage component</h1>;
 }
