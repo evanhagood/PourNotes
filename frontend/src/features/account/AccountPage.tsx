@@ -56,16 +56,7 @@ export function AccountPage() {
         </div>
       </dl>
 
-      <button
-  onClick={() => logout.mutate()}
-  disabled={logout.isPending}
->
-  {logout.isPending ? "Logging out..." : "Log Out"}
-</button>
-
-{logout.isError && (
-  <p>Logout failed: {logout.error.message}</p>
-)}
+      <button onClick={() => logout.mutate()}>Log Out</button>
     </main>
   );
 }
