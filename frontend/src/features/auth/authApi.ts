@@ -1,42 +1,25 @@
-export type CurrentUser = {
-  id: string;
-  displayName: string;
-  email: string | null;
-  emailVerified: boolean;
-  pictureUrl: string | null;
-  role: "USER" | "ADMIN";
-};
-
-type CsrfTokenResponse = {
-  token: string;
-  headerName: string;
-  parameterName: string;
-};
+import type { CsrfTokenResponse } from "./types/CsrfTokenResponse";
+import type { Account } from "../account/Account";
 
 /**
- * Returns the current authenticated user, or null when no valid
- * backend session exists.
+ * Get the current authenticated acount
+ * 
+ * @returns Promise<Account> with the account information or null if not authenticated.
  */
-export async function fetchCurrentUser(): Promise<CurrentUser | null> {
+export async function getAccount(): Promise<Account | null> {
   const response = await fetch("/api/auth/me", {
-    method: "GET",
     credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
   });
 
-  if (response.status === 401) {
+  if(response.status == 401) { // user is unauthenticated
     return null;
   }
 
-  if (!response.ok) {
-    throw new Error(
-      `Unable to load current user: ${response.status}`,
-    );
+  if(!response.ok) {
+    throw new Error("Failed to fetch account");
   }
 
-  return response.json() as Promise<CurrentUser>;
+  return response.json();
 }
 
 /**

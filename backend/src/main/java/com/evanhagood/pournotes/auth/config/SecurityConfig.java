@@ -14,6 +14,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfig {
@@ -27,10 +30,8 @@ public class SecurityConfig {
             PourNotesOidcUserService pourNotesOidcUserService
     ) throws Exception {
 
-        AuthenticationEntryPoint apiAuthenticationEntryPoint =
-                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED);
-
         http
+                .cors(withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/csrf").permitAll()
 
@@ -51,7 +52,7 @@ public class SecurityConfig {
                 // Auth related exceptions will send a 401 so the frontend can reprompt the user to log in
                 .exceptionHandling(exceptions -> exceptions
                         .defaultAuthenticationEntryPointFor(
-                                apiAuthenticationEntryPoint,
+                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                                 pathPattern("/api/**")
                         )
                 )
@@ -77,9 +78,11 @@ public class SecurityConfig {
                                                 HttpStatus.NO_CONTENT.value()
                                         )
                         )
+                )
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
                 );
 
-        // Do not call csrf.disable().
         return http.build();
     }
 }
