@@ -6,7 +6,7 @@ import {
 import {
   fetchCurrentUser,
   type CurrentUser,
-} from "./authApi";
+} from "../authApi";
 
 export const CURRENT_USER_QUERY_KEY = [
   "current-user",
