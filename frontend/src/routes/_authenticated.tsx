@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { getAccount } from "../features/auth/authApi";
 
 export const Route = createFileRoute("/_authenticated")({
