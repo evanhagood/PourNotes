@@ -66,3 +66,32 @@ export async function logout(): Promise<void> {
     throw new Error(`Logout failed: ${response.status}`);
   }
 }
+
+/**
+ * Authenticates a local development user.
+ */
+export async function devLogin(
+  username: string,
+  password: string
+): Promise<void> {
+  const csrf = await fetchCsrfToken();
+
+  const body = new URLSearchParams({
+    username,
+    password,
+  });
+
+  const response = await fetch("/api/auth/dev-login", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      [csrf.headerName]: csrf.token,
+    },
+    body,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Dev login failed: ${response.status}`);
+  }
+}

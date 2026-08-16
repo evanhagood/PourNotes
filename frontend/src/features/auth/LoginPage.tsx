@@ -1,16 +1,17 @@
 import { beginGoogleLogin } from "./authApi";
+import { DevLoginForm } from "./DevLoginForm";
 
 export function LoginPage() {
   return (
-    <main>
+    <main className="login-page">
       <h1>PourNotes</h1>
-      <p>
-        Sign in to record coffees and build your taste profile.
-      </p>
+      <p>Sign in to record coffees and build your taste profile.</p>
 
-      <button type="button" onClick={beginGoogleLogin}>
+      <button onClick={beginGoogleLogin}>
         Continue with Google
       </button>
+
+      {import.meta.env.DEV && <DevLoginForm />}
     </main>
   );
 }
