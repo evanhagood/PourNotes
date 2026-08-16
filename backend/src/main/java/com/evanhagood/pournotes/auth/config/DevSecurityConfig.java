@@ -25,22 +25,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class DevSecurityConfig {
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        // its fine to leave passwords unencrypted here. this only runs locally.
-        UserDetails devUser = User.withUsername("dev")
-                .password("{noop}dev")
-                .roles("USER")
-                .build();
-
-        UserDetails devAdmin = User.withUsername("admin")
-            .password("{noop}admin")
-            .roles("ADMIN")
-            .build();
-
-        return new InMemoryUserDetailsManager(devUser, devAdmin);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())

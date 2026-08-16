@@ -1,5 +1,9 @@
 package com.evanhagood.pournotes.user;
 
+import com.evanhagood.pournotes.auth.oidc.PourNotesOidcUserService;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,15 +22,17 @@ public class AppUserService {
     @Transactional
     public AppUser findOrCreateUser(
             String subject,
-            String displayName
+            String displayName,
+            UserRole role
     ) {
         return appUserRepository
                 .findBySubject(subject)
                 .orElseGet(() -> {
                     AppUser newUser = new AppUser(
                             subject,
-                            displayName
-                    );
+                            displayName,
+                            role
+                        );
 
                     return appUserRepository.save(newUser);
                 });
@@ -44,18 +50,45 @@ public class AppUserService {
     }
 
     @Transactional(readOnly = true)
-    public CurrentUserResponse getCurrentUser(OidcUser oidcUser) {
-        AppUser appUser = appUserRepository
-                .findBySubject(oidcUser.getSubject())
-                .orElseThrow(() -> new AppUserNotFoundException(oidcUser.getEmail()));
+    public CurrentUserResponse getCurrentUser(Object principal) {
+        if (principal instanceof OidcUser oidcUser) {
+            AppUser appUser = appUserRepository
+                    .findBySubject(oidcUser.getSubject())
+                    .orElseThrow(() ->
+                            new AppUserNotFoundException(
+                                    oidcUser.getEmail()
+                            )
+                    );
 
-        return new CurrentUserResponse(
-                appUser.getId(),
-                appUser.getDisplayName(),
-                oidcUser.getEmail(),
-                Boolean.TRUE.equals(oidcUser.getEmailVerified()),
-                oidcUser.getPicture(),
-                appUser.getRole()
-        );
-    }
+            return new CurrentUserResponse(
+                    appUser.getId(),
+                    appUser.getDisplayName(),
+                    oidcUser.getEmail(),
+                    Boolean.TRUE.equals(oidcUser.getEmailVerified()),
+                    oidcUser.getPicture(),
+                    appUser.getRole()
+            );
+        }
+
+        if (principal instanceof UserDetails userDetails) {
+                String subject = "dev:" + userDetails.getUsername();
+
+                AppUser appUser = appUserRepository
+                .findBySubject(subject)
+                .orElseThrow(() ->
+                        new AppUserNotFoundException(userDetails.getUsername())
+                );
+
+                return new CurrentUserResponse(
+                        appUser.getId(),
+                        appUser.getDisplayName(),
+                        userDetails.getUsername() + "@dev.local",
+                        true,
+                        null,
+                        appUser.getRole()
+                );
+        }
+
+        throw new IllegalArgumentException("Principal of type " + principal.getClass() + " is unknown.");
+}
 }

@@ -54,18 +54,21 @@ public class AppUser {
 
     protected AppUser() {}
 
-    public AppUser(String googleSubject, String displayName) {
-        if (googleSubject == null || googleSubject.isBlank()) {
-            throw new IllegalArgumentException("Google subject is required");
+    public AppUser(String subject, String displayName, UserRole role) {
+        if (subject == null || subject.isBlank()) {
+            throw new IllegalArgumentException("Subject is required");
         }
 
         if (displayName == null || displayName.isBlank()) {
             throw new IllegalArgumentException("Display name is required");
         }
+        if (role == null) {
+            throw new IllegalArgumentException("Display name is required");
+        }
 
-        this.subject = googleSubject;
+        this.subject = subject;
         this.displayName = displayName;
-        this.role = UserRole.USER;
+        this.role = role;
     }
 
     @PrePersist

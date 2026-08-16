@@ -2,8 +2,8 @@ package com.evanhagood.pournotes.auth;
 
 import com.evanhagood.pournotes.user.AppUserService;
 
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +24,15 @@ public class AuthController {
 
     /**
      * Returns the current user's PourNotes account information.
+     * 
+     * On prod, gets the authenticated oidcUser. On dev, gets the UserDetails of preset accounts.
      *
-     * @param oidcUser authenticated Google principal supplied by Spring Security
+     * @param AuthenticationPrincipal authenticated user entity provided by Spring Security
      * @return current PourNotes user information
      */
     @GetMapping("/me")
-    public CurrentUserResponse getCurrentUser(@AuthenticationPrincipal OidcUser oidcUser) {
-        return appUserService.getCurrentUser(oidcUser);
+    public CurrentUserResponse getCurrentUser(@AuthenticationPrincipal Object principal) {
+        return appUserService.getCurrentUser(principal);
     }
 
     /**

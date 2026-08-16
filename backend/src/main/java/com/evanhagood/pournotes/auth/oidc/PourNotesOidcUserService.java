@@ -8,28 +8,30 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import com.evanhagood.pournotes.user.AppUserService;
+import com.evanhagood.pournotes.user.UserRole;
 
 @Service
 public class PourNotesOidcUserService implements OAuth2UserService<OidcUserRequest, OidcUser> {
     
-    private final OidcUserService delegate;
+    private final OidcUserService oidcUserService;
     private final AppUserService appUserService;
 
     public PourNotesOidcUserService(AppUserService appUserService) {
         this.appUserService = appUserService;
-        this.delegate = new OidcUserService();
+        this.oidcUserService = new OidcUserService();
     }
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest)
-        throws OAuth2AuthenticationException {
-        
-        OidcUser oidcUser = delegate.loadUser(userRequest);
+            throws OAuth2AuthenticationException {
 
-        String subject = oidcUser.getSubject();
-        String email = oidcUser.getEmail();
+        OidcUser oidcUser = oidcUserService.loadUser(userRequest);
 
-        appUserService.findOrCreateUser(subject, email);
+        appUserService.findOrCreateUser(
+                oidcUser.getSubject(),
+                oidcUser.getEmail(),
+                UserRole.USER
+        );
 
         return oidcUser;
     }
