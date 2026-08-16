@@ -1,0 +1,34 @@
+services:
+  backend:
+    image: pournotes-backend:latest
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+
+    secrets:
+      - datasource_url
+      - datasource_username
+      - datasource_password
+      - google_client_id
+      - google_client_secret
+
+    restart: unless-stopped
+
+secrets:
+  datasource_url:
+    file: ./secrets/spring.datasource.url
+
+  datasource_username:
+    file: ./secrets/spring.datasource.username
+
+  datasource_password:
+    file: ./secrets/spring.datasource.password
+
+  google_client_id:
+    file: ./secrets/spring.security.oauth2.client.registration.google.client-id
+
+  google_client_secret:
+    file: ./secrets/spring.security.oauth2.client.registration.google.client-secret
